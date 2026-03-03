@@ -118,57 +118,48 @@ public class Menu extends JFrame{
 								
 							panel2 = new JPanel();
 							add = new JButton("Add");
-							
-							 add.addActionListener(new ActionListener() {
-								public void actionPerformed(ActionEvent e) {
-							
-									
-						PPS = pPSTextField.getText();
-						firstName = firstNameTextField.getText();
-						surname = surnameTextField.getText();
-						DOB = dOBTextField.getText();
-						password = "";
-					
-						CustomerID = "ID"+PPS ;
-						
-					
-						
-						
-						
-						
+
 						add.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								f1.dispose();
-								
+
+								PPS = pPSTextField.getText();
+								firstName = firstNameTextField.getText();
+								surname = surnameTextField.getText();
+								DOB = dOBTextField.getText();
+
+								password = "";
+								CustomerID = "ID" + PPS;
+
 								boolean loop = true;
-								while(loop){
-								 password = JOptionPane.showInputDialog(f, "Enter 7 character Password;");
-								
-								 if(password.length() != 7)//Making sure password is 7 characters
-								    {
-								    	JOptionPane.showMessageDialog(null, null, "Password must be 7 charatcers long", JOptionPane.OK_OPTION);
-								    }
-								 else
-								 {
-									 loop = false;
-								 }
+								while (loop) {
+									password = JOptionPane.showInputDialog(f1, "Enter 7 character Password;");
+									if (password == null) {
+										return;
+									}
+
+									if (password.length() != 7) {
+										JOptionPane.showMessageDialog(f1, "Password must be 7 characters long");
+									} else {
+										loop = false;
+									}
 								}
-								
-								
-								
-								
-							    ArrayList<CustomerAccount> accounts = new ArrayList<CustomerAccount> ();
-										Customer customer = new Customer(PPS, surname, firstName, DOB, CustomerID, password, accounts);
-											
-										customerList.add(customer);
-									
-										JOptionPane.showMessageDialog(f, "CustomerID = " + CustomerID +"\n Password = " + password  ,"Customer created.",  JOptionPane.INFORMATION_MESSAGE);
-										menuStart();
-									f.dispose();
+
+								ArrayList<CustomerAccount> accounts = new ArrayList<CustomerAccount>();
+								Customer customer = new Customer(PPS, surname, firstName, DOB, CustomerID, password, accounts);
+
+								customerList.add(customer);
+
+								JOptionPane.showMessageDialog(
+										f1,
+										"CustomerID = " + CustomerID + "\nPassword = " + password,
+										"Customer created.",
+										JOptionPane.INFORMATION_MESSAGE
+								);
+
+								f1.dispose();
+								menuStart();
 							}
-						});	
-								}
-							});						
+						});
 							JButton cancel = new JButton("Cancel");					
 							cancel.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent e) {
@@ -207,7 +198,7 @@ public class Menu extends JFrame{
 					    	}
 					    	else if(reply == JOptionPane.NO_OPTION)
 					    	{
-					    		f1.dispose();
+					    		f.dispose();
 					    		loop = false;
 					    		loop2 = false;
 					    		menuStart();
@@ -230,7 +221,7 @@ public class Menu extends JFrame{
 							    		
 							    	}
 							    	else if(reply == JOptionPane.NO_OPTION){
-							    		f1.dispose();
+							    		f.dispose();
 							    		loop2 = false;
 							    		menuStart();
 							    	}
@@ -244,7 +235,7 @@ public class Menu extends JFrame{
 					    	
 					    if(cont)
 					    {
-						f1.dispose();
+						f.dispose();
 					    	loop = false;
 					    admin();					    
 					    }					    
@@ -1273,24 +1264,26 @@ public class Menu extends JFrame{
 			}
 	     });		
 	}
-	
+
 	public void customer(Customer e1)
-	{	
+	{
+		Customer e = e1;
+
 		f = new JFrame("Customer Menu");
-		e1 = e;
 		f.setSize(400, 300);
 		f.setLocation(200, 200);
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) { System.exit(0); }
-		});          
-		f.setVisible(true);
-		
-		if(e.getAccounts().size() == 0)
+		});
+
+		if (e.getAccounts().size() == 0)
 		{
 			JOptionPane.showMessageDialog(f, "This customer does not have any accounts yet. \n An admin must create an account for this customer \n for them to be able to use customer functionality. " ,"Oops!",  JOptionPane.INFORMATION_MESSAGE);
-			f.dispose();				
+			f.dispose();
 			menuStart();
+			return;
 		}
+
 		else
 		{
 		JPanel buttonPanel = new JPanel();
@@ -1315,7 +1308,7 @@ public class Menu extends JFrame{
 	   
 	    for(int i = 0; i<e.getAccounts().size(); i++)
 	    {
-	    	if(e.getAccounts().get(i).getNumber() == box.getSelectedItem() )
+			if (e.getAccounts().get(i).getNumber().equals(box.getSelectedItem()))
 	    	{
 	    		acc = e.getAccounts().get(i);
 	    	}
@@ -1326,11 +1319,14 @@ public class Menu extends JFrame{
 	
 	    
 		boxPanel.add(box);
-		content = f.getContentPane();
-		content.setLayout(new GridLayout(3, 1));
-		content.add(labelPanel);
-		content.add(boxPanel);
-		content.add(buttonPanel);
+			content = f.getContentPane();
+			content.setLayout(new GridLayout(3, 1));
+			content.add(labelPanel);
+			content.add(boxPanel);
+			content.add(buttonPanel);
+			f.setVisible(true);
+			f.revalidate();
+			f.repaint();
 		
 		returnButton.addActionListener(new ActionListener(  ) {
 			public void actionPerformed(ActionEvent ae) {
