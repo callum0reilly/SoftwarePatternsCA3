@@ -20,7 +20,7 @@ public class Menu extends JFrame{
     private int position = 0;
 	private String password;
 	private Customer customer = null;
-	private CustomerAccount acc = new CustomerAccount();
+	private CustomerAccount acc = null;
 	JFrame f, f1;
 	 JLabel firstNameLabel, surnameLabel, pPPSLabel, dOBLabel;
 	 JTextField firstNameTextField, surnameTextField, pPSTextField, dOBTextField;
@@ -1111,46 +1111,30 @@ public class Menu extends JFrame{
 			    	//a combo box in an dialog box that asks the admin what type of account they wish to create (deposit/current)
 				    String[] choices = { "Current Account", "Deposit Account" };
 				    String account = (String) JOptionPane.showInputDialog(null, "Please choose account type",
-				        "Account Type", JOptionPane.QUESTION_MESSAGE, null, choices, choices[1]); 
-				    
-				    if(account.equals("Current Account"))
-				    {
-				    	//create current account
-				    	boolean valid = true;
-				    	double balance = 0;
-				    	String number = String.valueOf("C" + (customerList.indexOf(customer)+1) * 10 + (customer.getAccounts().size()+1));//this simple algorithm generates the account number
-				    	ArrayList<AccountTransaction> transactionList = new ArrayList<AccountTransaction>();
-				    	int randomPIN = (int)(Math.random()*9000)+1000;
-				           String pin = String.valueOf(randomPIN);
-				    
-				           ATMCard atm = new ATMCard(randomPIN, valid);
-				    	
-				    	CustomerCurrentAccount current = new CustomerCurrentAccount(atm, number, balance, transactionList);
-				    	
-				    	customer.getAccounts().add(current);
-				    	JOptionPane.showMessageDialog(f, "Account number = " + number +"\n PIN = " + pin  ,"Account created.",  JOptionPane.INFORMATION_MESSAGE);
-				    	
-				    	f.dispose();
-				    	admin();
-				    }
-				    
-				    if(account.equals("Deposit Account"))
-				    {
-				    	//create deposit account
-				    	
-				    	double balance = 0, interest = 0;
-				    	String number = String.valueOf("D" + (customerList.indexOf(customer)+1) * 10 + (customer.getAccounts().size()+1));//this simple algorithm generates the account number
-				    	ArrayList<AccountTransaction> transactionList = new ArrayList<AccountTransaction>();
-				        	
-				    	CustomerDepositAccount deposit = new CustomerDepositAccount(interest, number, balance, transactionList);
-				    	
-				    	customer.getAccounts().add(deposit);
-				    	JOptionPane.showMessageDialog(f, "Account number = " + number ,"Account created.",  JOptionPane.INFORMATION_MESSAGE);
-				    	
-				    	f.dispose();
-				    	admin();
-				    }
-			    
+				        "Account Type", JOptionPane.QUESTION_MESSAGE, null, choices, choices[1]);
+
+					if(account == null)
+					{
+						f.dispose();
+						admin();
+						return;
+					}
+					CustomerAccount newAccount = AccountFactory.createAccount(account, customer, customerList);
+					customer.getAccounts().add(newAccount);
+
+					String message = "Account number = " + newAccount.getNumber();
+
+					int pin = AccountFactory.getPin(newAccount);
+
+					if(pin != -1)
+					{
+						message = message + "\nPIN = " + pin;
+					}
+
+					JOptionPane.showMessageDialog(f, message, "Account created.", JOptionPane.INFORMATION_MESSAGE);
+
+					f.dispose();
+					admin();
 			    }			   
 			    }
 				}
@@ -1337,7 +1321,13 @@ public class Menu extends JFrame{
 		
 		continueButton.addActionListener(new ActionListener(  ) {
 			public void actionPerformed(ActionEvent ae) {
-				
+				for(int i = 0; i<e.getAccounts().size(); i++)
+				{
+					if(e.getAccounts().get(i).getNumber().equals(box.getSelectedItem()))
+					{
+						acc = e.getAccounts().get(i);
+					}
+				}
 		f.dispose();
 		
 		f = new JFrame("Customer Menu");
