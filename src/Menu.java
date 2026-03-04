@@ -496,24 +496,13 @@ public class Menu extends JFrame{
 					continueButton.addActionListener(new ActionListener(  ) {
 						public void actionPerformed(ActionEvent ae) {
 							String euro = "\u20ac";
-						 	
-							
-							if(acc instanceof CustomerDepositAccount)
-							{
-							
-							
-							JOptionPane.showMessageDialog(f, "25" + euro + " deposit account fee aplied."  ,"",  JOptionPane.INFORMATION_MESSAGE);
-							acc.setBalance(acc.getBalance()-25);
-							JOptionPane.showMessageDialog(f, "New balance = " + acc.getBalance() ,"Success!",  JOptionPane.INFORMATION_MESSAGE);
-							}
 
-							if(acc instanceof CustomerCurrentAccount)
+
+							ChargeStrategy strategy = ChargeStrategyFactory.getStrategy(acc);
+
+							if(strategy != null)
 							{
-							
-							
-							JOptionPane.showMessageDialog(f, "15" + euro + " current account fee aplied."  ,"",  JOptionPane.INFORMATION_MESSAGE);
-							acc.setBalance(acc.getBalance()-25);
-							JOptionPane.showMessageDialog(f, "New balance = " + acc.getBalance() ,"Success!",  JOptionPane.INFORMATION_MESSAGE);
+								strategy.applyCharge(acc, f);
 							}
 							
 							
@@ -642,35 +631,15 @@ public class Menu extends JFrame{
 										
 					continueButton.addActionListener(new ActionListener(  ) {
 						public void actionPerformed(ActionEvent ae) {
-							String euro = "\u20ac";
-						 	double interest = 0;
-						 	boolean loop = true;
-						 	
-						 	while(loop)
-						 	{
-							String interestString = JOptionPane.showInputDialog(f, "Enter interest percentage you wish to apply: \n NOTE: Please enter a numerical value. (with no percentage sign) \n E.g: If you wish to apply 8% interest, enter '8'");//the isNumeric method tests to see if the string entered was numeric. 
-							if(isNumeric(interestString))
+							InterestStrategy strategy = InterestStrategyFactory.getStrategy(acc);
+
+							if(strategy != null)
 							{
-								
-								interest = Double.parseDouble(interestString);
-								loop = false;
-								
-								acc.setBalance(acc.getBalance() + (acc.getBalance() * (interest/100)));
-								
-								JOptionPane.showMessageDialog(f, interest + "% interest applied. \n new balance = " + acc.getBalance() + euro ,"Success!",  JOptionPane.INFORMATION_MESSAGE);
+								strategy.applyInterest(acc, f);
 							}
-								
-							
-							else
-							{
-								JOptionPane.showMessageDialog(f, "You must enter a numerical value!" ,"Oops!",  JOptionPane.INFORMATION_MESSAGE);
-							}
-							
-							
-						 	}
 							
 							f.dispose();				
-						admin();				
+							admin();
 						}		
 				     });
 					
